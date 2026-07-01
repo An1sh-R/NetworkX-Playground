@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Generated outputs (recreated by running main.py)
+outputs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
