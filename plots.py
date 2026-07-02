@@ -28,9 +28,11 @@ def plot_degree_distribution(
     """
     _ensure_dir(output_path.parent)
     dist = pd.Series(degrees).value_counts().sort_index()
+    heights = np.asarray(dist.to_numpy(dtype=float), dtype=float)
+    x_positions = np.asarray(dist.index.to_numpy(dtype=float), dtype=float)
 
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.bar(dist.index, dist.values, color="steelblue", edgecolor="white")
+    ax.bar(x_positions, heights, color="steelblue", edgecolor="white")
     ax.set_xlabel("Degree")
     ax.set_ylabel("Number of nodes")
     ax.set_title(f"Degree Distribution — {title}")
@@ -49,8 +51,8 @@ def plot_log_log_degree_distribution(
     """
     _ensure_dir(output_path.parent)
     dist = pd.Series(degrees).value_counts().sort_index()
-    x = dist.index.to_numpy(dtype=float)
-    y = dist.values.astype(float)
+    x = np.asarray(dist.index.to_numpy(dtype=float), dtype=float)
+    y = np.asarray(dist.to_numpy(dtype=float), dtype=float)
     mask = (x > 0) & (y > 0)
 
     fig, ax = plt.subplots(figsize=(8, 5))

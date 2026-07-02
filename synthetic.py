@@ -23,7 +23,7 @@ def _even_k(target_k: int, n: int) -> int:
 
 def generate_erdos_renyi(n: int, avg_degree: float, seed: int = 42) -> nx.Graph:
     """
-    Erdős–Rényi G(n, p) random graph.
+    Erdős-Rényi G(n, p) random graph.
 
     nx.erdos_renyi_graph(n, p, seed=seed):
       - Adds each possible edge independently with probability p.

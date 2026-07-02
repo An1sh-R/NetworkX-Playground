@@ -8,10 +8,12 @@ compares them, and writes tables, plots, and a summary report.
 from __future__ import annotations
 
 import sys
+from typing import Any, cast
 
 # Windows consoles often default to cp1252; use UTF-8 for metric symbols.
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if callable(getattr(sys.stdout, "reconfigure", None)):
+    stdout = cast(Any, sys.stdout)
+    stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from pathlib import Path
 
@@ -101,7 +103,7 @@ def interpret_comparison(snap_name: str, comparison_df: pd.DataFrame) -> str:
             diffs.append(((r_val - s_val) / denom) ** 2)
         distances[row["name"]] = sum(diffs) ** 0.5 if diffs else float("inf")
 
-    best_model = min(distances, key=distances.get)
+    best_model = min(distances.items(), key=lambda item: item[1])[0]
     worst_metric_diff = None
     max_diff = -1.0
 
