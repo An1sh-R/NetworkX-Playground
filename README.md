@@ -153,9 +153,7 @@ python main.py
 
 ---
 
-## Learning Goals
-
-After running this project you should understand:
+## Learnings
 
 - How to load and inspect graphs in NetworkX
 - What common metrics tell you about real networks

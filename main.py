@@ -168,7 +168,7 @@ def analyze_snap_graph(filepath: Path, snap_name: str, seed: int = 42) -> tuple:
     n = snap_metrics["nodes"]
     avg_degree = snap_metrics["average_degree"]
 
-    print(f"\nGenerating synthetic graphs matched to n={n}, avg_degree~{avg_degree:.2f}", flush=True)
+    print(f"\nGenerating synthetic graphs matched to n={n}, avg_degree={avg_degree:.2f}", flush=True)
     synthetic_graphs = generate_all_synthetic(n, avg_degree, seed=seed)
 
     all_metrics = [snap_metrics]
