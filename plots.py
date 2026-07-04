@@ -24,15 +24,27 @@ def plot_degree_distribution(
     """
     Linear-scale degree distribution histogram.
 
-    Shows how many nodes have each degree — useful for spotting hubs vs bulk.
+    Uses a histogram rather than one bar per exact degree because real networks
+    often have many unique degree values and a bar-per-degree view can look too
+    sparse or visually empty for skewed distributions.
     """
     _ensure_dir(output_path.parent)
-    dist = pd.Series(degrees).value_counts().sort_index()
-    heights = np.asarray(dist.to_numpy(dtype=float), dtype=float)
-    x_positions = np.asarray(dist.index.to_numpy(dtype=float), dtype=float)
 
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.bar(x_positions, heights, color="steelblue", edgecolor="white")
+    if not degrees:
+        ax.text(
+            0.5,
+            0.5,
+            "No degree data",
+            transform=ax.transAxes,
+            ha="center",
+            va="center",
+        )
+    else:
+        values = np.asarray(degrees, dtype=float)
+        bins = min(50, max(10, int(np.sqrt(len(values)))))
+        ax.hist(values, bins=bins, color="steelblue", edgecolor="white")
+
     ax.set_xlabel("Degree")
     ax.set_ylabel("Number of nodes")
     ax.set_title(f"Degree Distribution — {title}")

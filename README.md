@@ -54,7 +54,8 @@ python main.py
 
 ### Console
 - Basic info for each SNAP graph (nodes, edges, degree stats, density, components)
-- Advanced metrics (clustering, transitivity, assortativity, Louvain communities, paths)
+- Advanced metrics (clustering, transitivity, assortativity, Louvain communities, paths, centrality)
+- Centrality summaries for degree, betweenness, closeness, eigenvector, and PageRank
 - Pandas comparison tables (SNAP vs four synthetic models)
 - Short interpretation after each dataset
 
@@ -83,6 +84,11 @@ python main.py
 |--------|------------------|------------|-----------|
 | **Degree distribution** | How many nodes have degree *k* | Reveals hub structure | — |
 | **Degree heterogeneity** | std(degree) / mean(degree) | Hub-dominated, unequal | Uniform degrees |
+| **Degree centrality** | How many direct neighbors a node has | Highly connected hubs | Peripheral nodes |
+| **Betweenness centrality** | How often a node lies on shortest paths | Bridge-like brokers | Nodes on few paths |
+| **Closeness centrality** | How close a node is to the rest of the graph | Central, well-connected nodes | Remote nodes |
+| **Eigenvector centrality** | How important a node is via important neighbors | Influential nodes in rich clubs | Weakly connected nodes |
+| **PageRank** | Recursive importance based on incoming influence | Widely referenced / influential nodes | Low-reach nodes |
 | **Clustering coefficient** | How often neighbors of a node connect | Tight local groups | Tree-like, open |
 | **Transitivity** | Global ratio of triangles to triples | Many closed triangles | Few triangles |
 | **Assortativity** | Do similar degrees connect? | Assortative (like-with-like) | Disassortative (hubs to periphery) |
@@ -136,6 +142,11 @@ python main.py
 | `nx.density(G)` | Edge fraction of complete graph | `float` in [0,1] | — |
 | `nx.connected_components(G)` | Connected pieces | Iterator of node sets | — |
 | `G.subgraph(nodes)` | Extract induced subgraph | `Graph` | Copy for safe mutation |
+| `nx.degree_centrality(G)` | Direct-connectivity importance | `dict` node→score | Highlights hubs |
+| `nx.betweenness_centrality(G)` | Shortest-path bridge centrality | `dict` node→score | Useful for brokers and bridges |
+| `nx.closeness_centrality(G)` | Proximity-based centrality | `dict` node→score | Measures closeness to the rest of the graph |
+| `nx.eigenvector_centrality(G)` | Influence through well-connected neighbors | `dict` node→score | Useful for prestige / influence |
+| `nx.pagerank(G)` | Recursive importance / influence ranking | `dict` node→score | Similar to web ranking |
 | `nx.average_clustering(G)` | Mean local clustering | `float` | Social cohesion |
 | `nx.transitivity(G)` | Global clustering | `float` | Triangle density |
 | `nx.degree_assortativity_coefficient(G)` | Degree correlation | `float` in [-1,1] | Needs edges |
