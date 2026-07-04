@@ -10,6 +10,30 @@ from __future__ import annotations
 import sys
 from typing import Any, cast
 
+
+class TeeStream:
+    """Mirror writes to the console and to a UTF-8 log file."""
+
+    def __init__(self, stream: Any, log_path: Path) -> None:
+        self._stream = stream
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        self._log_handle = log_path.open("w", encoding="utf-8", errors="replace")
+
+    def write(self, text: str) -> int:
+        self._stream.write(text)
+        self._log_handle.write(text)
+        self._stream.flush()
+        self._log_handle.flush()
+        return len(text)
+
+    def flush(self) -> None:
+        self._stream.flush()
+        self._log_handle.flush()
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._stream, name)
+
+
 # Windows consoles often default to cp1252; use UTF-8 for metric symbols.
 if callable(getattr(sys.stdout, "reconfigure", None)):
     stdout = cast(Any, sys.stdout)
@@ -37,6 +61,10 @@ OUTPUT_DIR = PROJECT_DIR / "outputs"
 TABLES_DIR = OUTPUT_DIR / "tables"
 PLOTS_DIR = OUTPUT_DIR / "plots"
 REPORT_PATH = OUTPUT_DIR / "summary_report.txt"
+RUN_LOG_PATH = OUTPUT_DIR / "run_log.txt"
+
+if not isinstance(sys.stdout, TeeStream):
+    sys.stdout = TeeStream(sys.stdout, RUN_LOG_PATH)
 
 # SNAP edge-list files (downloaded from https://snap.stanford.edu/data/)
 SNAP_FILES = {

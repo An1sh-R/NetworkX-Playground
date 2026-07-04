@@ -6,8 +6,6 @@ what it measures, why it is useful, and how to interpret high/low values.
 """
 
 from __future__ import annotations
-
-import math
 from typing import Any
 
 import networkx as nx
@@ -160,6 +158,39 @@ def assortativity(G: nx.Graph) -> float:
         return 0.0
     return float(nx.degree_assortativity_coefficient(G))
 
+def centrality_metrics(G: nx.Graph) -> dict[str, tuple[Any, float]]:
+    """
+    Compute the most central node according to several centrality measures.
+
+    Returns:
+        {
+            "degree": (node, score),
+            "betweenness": (node, score),
+            "closeness": (node, score),
+            "eigenvector": (node, score),
+            "pagerank": (node, score),
+        }
+    """
+
+    if G.number_of_nodes() == 0:
+        return {}
+
+    degree = nx.degree_centrality(G)
+    betweenness = nx.betweenness_centrality(G)
+    closeness = nx.closeness_centrality(G)
+    try:
+        eigenvector = nx.eigenvector_centrality(G, max_iter=1000)
+    except nx.PowerIterationFailedConvergence:
+        eigenvector = {node: 0.0 for node in G.nodes()}
+    pagerank = nx.pagerank(G)
+
+    return {
+        "degree": max(degree.items(), key=lambda x: x[1]),
+        "betweenness": max(betweenness.items(), key=lambda x: x[1]),
+        "closeness": max(closeness.items(), key=lambda x: x[1]),
+        "eigenvector": max(eigenvector.items(), key=lambda x: x[1]),
+        "pagerank": max(pagerank.items(), key=lambda x: x[1]),
+    }
 
 def louvain_communities(G: nx.Graph) -> tuple[dict[Any, int], int, float]:
     """
@@ -227,6 +258,7 @@ def compute_all_metrics(G: nx.Graph, name: str) -> dict[str, Any]:
 
     partition, num_communities, modularity = louvain_communities(G)
     avg_path, diameter = path_metrics_on_lcc(lcc)
+    centralities = centrality_metrics(G)
 
     return {
         "name": name,
@@ -245,6 +277,7 @@ def compute_all_metrics(G: nx.Graph, name: str) -> dict[str, Any]:
         "clustering_coefficient": clustering_coefficient(G),
         "transitivity": transitivity(G),
         "assortativity": assortativity(G),
+        "centralities": centralities,
         "num_communities": num_communities,
         "modularity": modularity,
         "avg_shortest_path_lcc": avg_path,
@@ -272,3 +305,6 @@ def print_basic_info(metrics: dict[str, Any]) -> None:
     print(f"  Connected components:   {metrics['connected_components']}")
     print(f"  Largest component:      {metrics['lcc_nodes']:,} nodes "
           f"({metrics['lcc_fraction']:.1%} of graph)")
+    print("\nMost Central Nodes")
+    for metric, (node, score) in metrics["centralities"].items():
+        print(f"  {metric.capitalize():12} Node {node:<8} Score {score:.4f}")
