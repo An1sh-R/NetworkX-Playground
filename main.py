@@ -87,12 +87,33 @@ COMPARISON_COLUMNS = [
     "degree_heterogeneity",
     "avg_shortest_path_lcc",
     "diameter_lcc",
+    "degree_centrality_max",
+    "betweenness_centrality_max",
+    "closeness_centrality_max",
+    "eigenvector_centrality_max",
+    "pagerank_max",
 ]
 
 
 def metrics_to_row(metrics: dict) -> dict:
     """Flatten metrics dict for pandas (exclude non-tabular fields)."""
-    return {k: metrics[k] for k in COMPARISON_COLUMNS if k in metrics}
+    row = {k: metrics[k] for k in COMPARISON_COLUMNS if k in metrics}
+
+    centralities = metrics.get("centralities")
+    if isinstance(centralities, dict):
+        row["degree_centrality_max"] = centralities.get("degree", (None, None))[1]
+        row["betweenness_centrality_max"] = centralities.get("betweenness", (None, None))[1]
+        row["closeness_centrality_max"] = centralities.get("closeness", (None, None))[1]
+        row["eigenvector_centrality_max"] = centralities.get("eigenvector", (None, None))[1]
+        row["pagerank_max"] = centralities.get("pagerank", (None, None))[1]
+    else:
+        row["degree_centrality_max"] = None
+        row["betweenness_centrality_max"] = None
+        row["closeness_centrality_max"] = None
+        row["eigenvector_centrality_max"] = None
+        row["pagerank_max"] = None
+
+    return row
 
 
 def interpret_comparison(snap_name: str, comparison_df: pd.DataFrame) -> str:
